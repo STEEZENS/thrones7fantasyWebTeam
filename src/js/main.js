@@ -1,779 +1,44 @@
 'use strict';
-
-// 1. import styles when env === dev else use extractfilewebpackplugin
 const css = require('../sass/main.scss');
+
+// PLAYERS AND THEIR DRAFT PICKS
+const players = [
+    {
+        name: 'Kenneth',
+        draftPicks: ['jon', 'daenerys', 'cersei', 'jaime']
+    },
+    {
+        name: 'Christian',
+        draftPicks: ['tyrion', 'sansa', 'arya', 'bran']
+    },
+    {
+        name: 'Will',
+        draftPicks: ['littlefinger', 'varys', 'hound', 'mountain']
+    },
+    {
+        name: 'Mark',
+        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+    },
+    {
+        name: 'Cam',
+        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+    },
+    {
+        name: 'Nate',
+        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+    }
+]
+
+// DATA SET ON AJAX
+let scoring = null;
+let characterTallies = null;
+let characterScorecards = null;
+let playerScorecards = null;
 
 // DOM REFS
 const DOM = {
     scorecards: document.getElementById('scorecards')
 }
-
-// CHARACTER REFERENCE (USELESS / ONLY FOR CONVENIENCE & REFERENCE)
-const characters = [
-    'jon snow',
-    'daenerys',
-    'cersei',
-    'jaime',
-    'tyrion',
-    'sansa',
-    'arya',
-    'bran',
-    'littlefinger',
-    'varys',
-    'the hound',
-    'the mountain',
-    'the night king',
-    'davos',
-    'brienne',
-    'bronn',
-    'grey worm',
-    'melisandre',
-    'theon',
-    'yara'
-    // 'tormun giantsbane'
-]
-
-// SCORING REFERENCE
-const scoring = {
-    violence: {
-        killRandomCharacter: 10,
-        killMainCharacter: 20,
-        killWhiteWalker: 50,
-        killedByWhiteWalker: 50,
-        killKing: 100,
-        killDragon: 200,
-        getKilled: 100
-    },
-    sex: {
-        sexWithRandomCharacter: 10,
-        sexWithMainCharacter: 40,
-        watchSex: 10,
-        getNaked: 100
-    },
-    status: {
-        takeIronThrone: 500,
-        loseIronThrone: -500,
-        resurrect: 100,
-        conceive: 50,
-        getEngaged: 20,
-        getMarried: 50,
-        haveVision: 10
-    },
-    consumption: {
-        eatOrDrink: 10
-    }
-}
-
-// PLAYERS AND THEIR DRAFT PICKS
-const players = [
-    {
-        name: 'cam',
-        draftPicks: ['jon snow', 'daenerys', 'cersei', 'jaime', 'bronn']
-    },
-    {
-        name: 'shelby',
-        draftPicks: ['tyrion', 'sansa', 'arya', 'bran', 'grey worm']
-    },
-    {
-        name: 'dallen',
-        draftPicks: ['littlefinger', 'varys', 'the hound', 'the mountain', 'melisandre']
-    },
-    {
-        name: 'shalyse',
-        draftPicks: ['the night king', 'davos', 'brienne', 'theon', 'yara']
-    }
-]
-
-// CHARACTER TALLIES ( ** UPDATE ME AFTER EACH SHOW ** )
-const characterTallies = [
-    // jon snow
-    {
-        name: 'jon snow',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 8,
-                killMainCharacter: 2,
-                killWhiteWalker: 7,
-                killedByWhiteWalker: 0,
-                killKing: 1,
-                killDragon: 1,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 1,
-                loseIronThrone: 0,
-                resurrect: 1,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 1
-            }
-        }
-    },
-    // daenerys targaryen
-    {
-        name: 'daenerys',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 2,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 2
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // cersei lannister
-    {
-        name: 'cersei',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 1
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 1,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // jaime lannister
-    {
-        name: 'jaime',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 4,
-                killMainCharacter: 2,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 1,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 1,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 2
-            }
-        }
-    },
-    // tyrion lannister
-    {
-        name: 'tyrion',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 1,
-                killWhiteWalker: 2,
-                killedByWhiteWalker: 0,
-                killKing: 2,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 3
-            },
-            consumption: {
-                eatOrDrink: 100
-            }
-        }
-    },
-    // sansa stark
-    {
-        name: 'sansa',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 1,
-                getMarried: 1,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 1
-            }
-        }
-    },
-    // arya stark
-    {
-        name: 'arya',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 2,
-                killMainCharacter: 4,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 1
-            }
-        }
-    },
-    // bran stark
-    {
-        name: 'bran',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // littlefinger
-    {
-        name: 'littlefinger',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // varys
-    {
-        name: 'varys',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // the hound
-    {
-        name: 'the hound',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // the mountain
-    {
-        name: 'the mountain',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // the night king
-    {
-        name: 'the night king',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // davos seaworth
-    {
-        name: 'davos',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // brienne of tarth
-    {
-        name: 'brienne',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // bronn
-    {
-        name: 'bronn',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // grey worm
-    {
-        name: 'grey worm',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 15,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // melisandre
-    {
-        name: 'melisandre',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // theon greyjoy
-    {
-        name: 'theon',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    },
-    // yara greyjoy
-    {
-        name: 'yara',
-        totalPoints: null,
-        scorecard: {
-            violence: {
-                killRandomCharacter: 0,
-                killMainCharacter: 0,
-                killWhiteWalker: 0,
-                killedByWhiteWalker: 0,
-                killKing: 0,
-                killDragon: 0,
-                getKilled: 0
-            },
-            sex: {
-                sexWithRandomCharacter: 0,
-                sexWithMainCharacter: 0,
-                watchSex: 0,
-                getNaked: 0
-            },
-            status: {
-                takeIronThrone: 0,
-                loseIronThrone: 0,
-                resurrect: 0,
-                conceive: 0,
-                getEngaged: 0,
-                getMarried: 0,
-                haveVision: 0
-            },
-            consumption: {
-                eatOrDrink: 0
-            }
-        }
-    }
-
-]
-
-// UPDATED CHARACTER SCORECARDS
-const characterScorecards = getCharacterScorecards();
-
-// UPDATED PLAYER SCORECARDS
-const playerScorecards = getPlayerScorecards();
 
 // METHODS
 function getCharacterScorecards () {
@@ -835,6 +100,15 @@ function getPlayerScorecards () {
     return playerScorecards.sort((a, b) => {
         return b.totalPoints - a.totalPoints;
     });
+}
+function getPlayerRankings () {
+    let uniqueTotals = [];
+    playerScorecards.forEach(scorecard => {
+        if (uniqueTotals.indexOf(scorecard.totalPoints) === -1) {
+            uniqueTotals.push(scorecard.totalPoints);
+        }
+    });
+    return uniqueTotals;
 }
 function loadPlayerScorecards () {
     playerScorecards.forEach((scorecard, index) => {
@@ -943,12 +217,22 @@ function loadPlayerScorecards () {
         ${ getCriteriaAndScoreItems() }
         </table>
         </div>`
+
         let toggleTeamEl = document.createElement('BUTTON');
         toggleTeamEl.setAttribute('class', 'team-toggle');
         toggleTeamEl.addEventListener('click', () => {toggleTeam(index)});
+
+        let playerRankings = getPlayerRankings();
+        playerRankings.forEach((rankScore, index) => {
+            if (scorecard.totalPoints === rankScore) {
+                templateRoot.classList.add(`rank-${ index + 1 }`);
+            }
+        });
+
         templateRoot.innerHTML = template;
         templateRoot.appendChild(toggleTeamEl);
         DOM.scorecards.appendChild(templateRoot);
+
     });
 }
 function toggleTeam(index) {
@@ -967,8 +251,22 @@ function handleScroll () {
     }
 }
 function init () {
-    loadPlayerScorecards();
-    // window.addEventListener('scroll', _.throttle(handleScroll, 100));
+    let getFantasyData = new XMLHttpRequest();
+    getFantasyData.open('GET', `https://codepen.io/camstephensdomo/pen/rwbwde.js`);
+    getFantasyData.onload = () => {
+        if (getFantasyData.status === 200) {
+            let fantasyData = JSON.parse(getFantasyData.responseText);
+            scoring = fantasyData[0];
+            characterTallies = fantasyData[1];
+            characterScorecards = getCharacterScorecards();
+            playerScorecards = getPlayerScorecards();
+            return loadPlayerScorecards();
+        } else {
+            console.log(`getFantasyData request failed. Returned status of ${getFantasyData.status}.`);
+        }
+    }
+    getFantasyData.send();
+    // window.addEventListener('scroll', _.throttle(handleScroll, 100)); *load in lodash for this if used
 }
 
 // UTILITY METHODS
@@ -987,15 +285,3 @@ function commalizeNumber(string) {
 
 // INIT
 init();
-
-let getDaDaData = new XMLHttpRequest();
-getDaDaData.open('GET', `https://codepen.io/camstephensdomo/pen/EXMpEm.js`);
-getDaDaData.onload = () => {
-    if (getDaDaData.status === 200) {
-        let daDaData = getDaDaData.responseText;
-        console.log(daDaData);
-    } else {
-        console.log(`daDaData request failed. Returned status of ${getDaDaData.status}.`);
-    }
-}
-getDaDaData.send();

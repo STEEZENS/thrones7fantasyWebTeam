@@ -1,8 +1,22 @@
+@mixin bp {
+    @media only screen and (min-width: 400px) {
+        @content;
+    }
+}
+
 // GLOBALS
 * {padding: 0; margin: 0; box-sizing: border-box;}
 html, body {overflow-x: hidden;}
 body {font-family: 'Avenir', 'Open Sans', 'Helvetica', sans-serif; padding: 40px 0;}
-h1 {text-align: center; font-size: 60px; font-weight: 400; padding-bottom: 40px;}
+h1 {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 400;
+    padding: 0 20px 40px 20px;
+    @include bp {
+        font-size: 50px;
+    }
+}
 ul {list-style-type: none;}
 .opacity-0 {opacity: .1;}
 
@@ -18,8 +32,11 @@ ul {list-style-type: none;}
         display: flex;
         justify-content: space-between;
         padding: 20px;
-        font-size: 40px;
+        font-size: 30px;
         text-transform: capitalize;
+        @include bp {
+            font-size: 40px;
+        }
     }
 
     .awards {
@@ -50,7 +67,7 @@ ul {list-style-type: none;}
     }
 
     &.open-team {
-        .team {max-height: 2000px !important;}
+        .team {max-height: 3000px !important;}
         .team-toggle:before {content: "HIDE TEAM";}
     }
 
@@ -67,6 +84,8 @@ ul {list-style-type: none;}
             margin-bottom: 20px;
             table-layout: fixed;
             width: 100%;
+            font-size: 12px;
+            @include bp {font-size: 14px;}
             tr {border-bottom: 1px solid rgba(black, .04);}
             tr > td:not(:first-child), tr > th:not(:first-child) {
                 text-align: center;
@@ -82,7 +101,7 @@ ul {list-style-type: none;}
         }
 
         .score-category {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             line-height: 40px;
             text-transform: uppercase;
@@ -106,8 +125,8 @@ ul {list-style-type: none;}
     }
 
     .scorecard-name:after {padding-left: 10px;}
-    &:nth-child(1) .scorecard-name:after {content: "🥇";}
-    &:nth-child(2) .scorecard-name:after {content: "🥈";}
-    &:nth-child(3) .scorecard-name:after {content: "🥉";}
+    &.rank-1 .scorecard-name:after {content: "🥇";}
+    &.rank-2 .scorecard-name:after {content: "🥈";}
+    &.rank-3 .scorecard-name:after {content: "🥉";}
 
 }
