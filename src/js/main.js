@@ -4,28 +4,28 @@ const css = require('../sass/main.scss');
 // PLAYERS AND THEIR DRAFT PICKS
 const players = [
     {
-        name: 'Kenneth',
-        draftPicks: ['jon', 'daenerys', 'cersei', 'jaime']
+        name: 'kenneth',
+        draftPicks: ['daenerys', 'euron', 'hound', 'melisandre']
     },
     {
-        name: 'Christian',
-        draftPicks: ['tyrion', 'sansa', 'arya', 'bran']
+        name: 'christian',
+        draftPicks: ['jon', 'mountain', 'brienne', 'varys']
     },
     {
-        name: 'Will',
-        draftPicks: ['littlefinger', 'varys', 'hound', 'mountain']
+        name: 'mark',
+        draftPicks: ['jaime', 'littlefinger', 'bronn', 'bran']
     },
     {
-        name: 'Mark',
-        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+        name: 'will',
+        draftPicks: ['yara', 'sansa', 'tormun', 'davos']
     },
     {
-        name: 'Cam',
-        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+        name: 'cam',
+        draftPicks: ['grey worm', 'tyrion', 'daario', 'theon']
     },
     {
-        name: 'Nate',
-        draftPicks: ['night king', 'davos', 'brienne', 'theon']
+        name: 'nate',
+        draftPicks: ['cersei', 'arya', 'night king', 'missandei']
     }
 ]
 
