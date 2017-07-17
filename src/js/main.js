@@ -17,7 +17,7 @@ const players = [
     },
     {
         name: 'will',
-        draftPicks: ['yara', 'sansa', 'tormun', 'davos']
+        draftPicks: ['yara', 'sansa', 'tormund', 'davos']
     },
     {
         name: 'cam',
