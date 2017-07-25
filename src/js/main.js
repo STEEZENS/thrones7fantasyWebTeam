@@ -9,11 +9,11 @@ const players = [
     },
     {
         name: 'christian',
-        draftPicks: ['jon', 'mountain', 'brienne', 'varys']
+        draftPicks: ['mountain', 'brienne', 'varys', 'bronn']
     },
     {
         name: 'mark',
-        draftPicks: ['jaime', 'littlefinger', 'bronn', 'bran']
+        draftPicks: ['jaime', 'littlefinger', 'bran', 'jon']
     },
     {
         name: 'will',
